@@ -19,10 +19,11 @@ window.onload = function() {
 	Site.prototype.startcolor = {r:219,g:226,b:234};//起始的背景颜色
 	Site.prototype.endcolor = {r:47,g:97,b:148};//最终的背景颜色
 	Site.prototype.getCurrentColor = function() {//计算当前背景颜色
-		if(this.color.r>this.endcolor.r && this.color.g > this.endcolor.g && this.color.b < this.endcolor.b){
-			this.color.r += this.countclick*4;
-			this.color.g += this.countclick*3;
-			this.color.b += this.countclick*2;
+		console.log(this.endcolor.r);
+		if(this.color.r>this.endcolor.r && this.color.g > this.endcolor.g && this.color.b > this.endcolor.b){
+			this.color.r -= 4;
+			this.color.g -= 3;
+			this.color.b -= 2;
 		}
 	};
 
@@ -39,8 +40,21 @@ window.onload = function() {
 		var tagA = document.createElement("a");
 		tagA.setAttribute('href', obj.url);
 		tagA.setAttribute('target', "_blank");
+		tagA.setAttribute('key', obj.key);
+		tagA.style.background = "rgb("+obj.color.r+","+obj.color.g+","+obj.color.b+")";
 		tagA.innerHTML = obj.name;
 		body.appendChild(tagA);
+		tagA.onclick = function () {
+			var key = this.getAttribute('key');
+			var siteObj =JSON.parse( localStorage.getItem("item"+key) );
+			var site = new Site(siteObj.url,siteObj.name);
+			site.key = siteObj.key;
+			site.countclick = siteObj.countclick + 1;
+			site.color = siteObj.color;
+			site.getCurrentColor();
+			this.style.background = "rgb("+site.color.r+","+site.color.g+","+site.color.b+")";
+			localStorage.setItem("item"+key,JSON.stringify(site));
+		};
 	}
 
 	addSite.onclick = function () {//将用户输入存进本地存储并动态创建html
