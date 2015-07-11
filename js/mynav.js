@@ -67,6 +67,8 @@ window.onload = function() {
 			if (key >= 0) {
 				var localItem = JSON.parse( localStorage.getItem("item"+key) );
 				createHtml(localItem);
+				inputUrl.value = "";
+				inputName.value = "";
 			}
 		}
 		else return;

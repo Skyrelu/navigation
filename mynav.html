@@ -6,8 +6,16 @@
 		<script src="js/mynav.js"></script>
 		<style>
 		body{text-align: center;font-family: "Microsoft JhengHei"; margin: 10px;padding: 0;background: #fff;}
+		h1{font-size: 3em;color: #e5e5e5; margin: 30px 0 20px;}
+		span.color1{color: rgb(219,226,234);}
+		span.color2{color: rgb(190,205,220);}
+		span.color3{color: rgb(161,183,206);}
+		span.color4{color: rgb(132,162,192);}
+		span.color5{color: rgb(103,140,177);}
+		span.color6{color: rgb(73,118,162);}
+		span.color7{color: rgb(47,97,148);}
 		a{display: inline-block;text-decoration: none;line-height: 2;margin-bottom: 10px;margin-right: 10px;padding: 10px;border-radius: 3px;color: #fff;background: rgb(219,226,234);}
-		a:hover{color: #fdfdfd;background: rgb(179,196,214) !important;}
+		a:hover{color: #fdfdfd;background: #ddc8b7 !important;}
 		.add-site-input input{
 			background: #e5e5e5;
 			border: none;
@@ -32,15 +40,30 @@
 			background: #d5d5d5;
 			color: #fff;
 		}
+		::selection {
+		background:rgb(132,162,192);
+		color:#fff;
+		}
+
+		::-moz-selection {
+		background:rgb(132,162,192);
+		color:#fff;
+		}
+
+		::-webkit-selection {
+		background:rgb(132,162,192);
+		color:#fff;
+		}
 		</style>
 	</head>
 	<body>
+		<h1>这里只有很<span class="color1">酷</span><span class="color2">酷</span><span class="color3">酷</span><span class="color4">酷</span><span class="color5">酷</span><span class="color6">酷</span><span class="color7">酷</span>的网站！</h1>
 		<div class="add-site-input">
 			<input type="text" placeholder="在这里贴网址" id="input-url">
 			<input type="text" placeholder="在这里输入描述" id="input-name">
 			<input type="button" value="添加" id="btn-add">
 		</div>
-		<a href="http://christmasexperiments.com" target="_blank" >圣诞节html5特效</a>
+		<!-- <a href="http://christmasexperiments.com" target="_blank" >圣诞节html5特效</a>
 		<a href="http://www.chromeexperiments.com/" target="_blank" >chrome实验特效</a>
 		<a href="http://www.mrdoob.com/" target="_blank" >three.js创始人的网站</a>
 		<a href="http://litewerx.dk/" target="_blank" >金属与化学元素等特效</a>
@@ -81,6 +104,6 @@
 		<a href="http://lostworldsfairs.com/atlantis/" target="_blank" >电梯滚动</a>
 		<a href="http://www.iutopi.com/" target="_blank" >卡通鱼群滚动</a>
 		<a href="http://adamrudzki.com/#" target="_blank" >纯色滚动</a>
-		<a href="http://www.racket.net.au/" target="_blank" >工匠网站，话说我正在修炼工匠精神</a>
+		<a href="http://www.racket.net.au/" target="_blank" >工匠网站，话说我正在修炼工匠精神</a> -->
 	</body>
 </html>
