@@ -40,14 +40,32 @@ function createSiteObj (url,name) {//将对象存进本地存储
 	return countItem;//相当于数组长度
 }
 function createHtml (obj) {//为添加的站点创建html元素节点并加入原来的文档流,obj为待添加的Site对象
-	var body = document.getElementsByTagName('body')[0];
+	var content = document.getElementById('content-site');
 	var tagA = document.createElement("a");
+	var hovermask = document.createElement("span");
+	var iconpencil = document.createElement("span");
+	var iconbin = document.createElement("span");
+	var text = document.createElement("span");
+	content.appendChild(tagA);
+	tagA.appendChild(hovermask);
+	tagA.appendChild(text);
+	hovermask.appendChild(iconpencil);
+	hovermask.appendChild(iconbin);
+	text.innerHTML = obj.name;
+
+	hovermask.setAttribute('class', "hover-mask");
+	iconpencil.setAttribute('class', "icon-pencil");
+	iconbin.setAttribute('class', "icon-bin");
+	text.setAttribute('class', "text");
+	
+
 	tagA.setAttribute('href', obj.url);
 	tagA.setAttribute('target', "_blank");
 	tagA.setAttribute('key', obj.key);
-	tagA.style.background = "rgb("+obj.color.r+","+obj.color.g+","+obj.color.b+")";
-	tagA.innerHTML = obj.name;
-	body.appendChild(tagA);
+	tagA.setAttribute('class',"normal");
+	tagA.style.background = "rgba("+obj.color.r+","+obj.color.g+","+obj.color.b+",0.5)";
+	
+	
 	tagA.onclick = function () {
 		var key = this.getAttribute('key');
 		var siteObj =JSON.parse( localStorage.getItem("item"+key) );
@@ -56,7 +74,7 @@ function createHtml (obj) {//为添加的站点创建html元素节点并加入�
 		site.countclick = siteObj.countclick + 1;
 		site.color = siteObj.color;
 		site.getCurrentColor();
-		this.style.background = "rgb("+site.color.r+","+site.color.g+","+site.color.b+")";
+		this.style.background = "rgba("+site.color.r+","+site.color.g+","+site.color.b+",0.5)";
 		localStorage.setItem("item"+key,JSON.stringify(site));
 	};
 }
@@ -67,17 +85,18 @@ function editSiteObj (key,url,name) {
 		obj.name = name;
 		localStorage.setItem("item"+key,JSON.stringify(obj));
 
-		var domA = document.querySelector("a[key="+key+"]");
+		var domA = document.querySelector("a[key='"+key+"']");
+		var text = domA.querySelector("span.text");
 		domA.setAttribute("href",url);
-		domA.innerHTML = name;
+		text.innerHTML = name;
 	}
 	else return;
 }
 function deleteSiteObj (key) {
 	if (localStorage.getItem("item"+key)) {
-		var body = document.getElementsByTagName('body')[0];
-		var domA = document.querySelector("a[key="+key+"]");
-		body.removeChild(domA);
+		var content = document.getElementById('content-site');
+		var domA = document.querySelector("a[key='"+key+"']");
+		content.removeChild(domA);
 
 		localStorage.removeItem("item"+key);
 		for (var i = key+1; i < countItem; i++) {
@@ -91,7 +110,9 @@ function deleteSiteObj (key) {
 }
 function bindEvent () {//绑定按钮的事件
 	addSiteEvent();
+	editSiteStateEvent();
 	editSiteEvent();
+	closeBox();
 
 }
 
@@ -114,12 +135,71 @@ function addSiteEvent () {
 		else return;
 	};
 }
-function editSiteEvent () {
+function editSiteStateEvent () {
 	var editSite = document.getElementById('btn-edit');
+	var inputUrl = document.getElementById('input-url');
+	var inputName = document.getElementById('input-name');
+	var btnadd = document.getElementById('btn-add');
+	var domAs = document.getElementsByTagName("a");
+	var i = 0;
 	editSite.onclick = function () {
-		var domAs = document.getElementsByTagName("a");
-		for (var i = 0; i < domAs.length; i++) {
-			domAs[i].setAttribute("class","shake shake-slow shake-constant");
+		if (this.value==="修改") {
+			this.value = "完成";
+			inputUrl.setAttribute('class', "input-edit");
+			inputUrl.setAttribute('readonly',"readonly");
+			inputName.setAttribute('class', "input-edit");
+			inputName.setAttribute('readonly',"readonly");
+			btnadd.setAttribute('class', "input-edit");
+			btnadd.setAttribute('readonly',"readonly");
+			for (i = 0; i < domAs.length; i++) {
+				domAs[i].setAttribute("class","edit");
+				domAs[i].setAttribute('onclick', "return false;");
+			}
 		}
+		else if (this.value==="完成") {
+			this.value = "修改";
+			inputUrl.removeAttribute('class');
+			inputUrl.removeAttribute('readonly');
+			inputName.removeAttribute('class');
+			inputName.removeAttribute('readonly');
+			btnadd.removeAttribute('class');
+			btnadd.removeAttribute('readonly');
+			for (i = 0; i < domAs.length; i++) {
+				domAs[i].setAttribute("class","normal");
+				domAs[i].removeAttribute('onclick');
+			}
+		}
+		else{ return false;}
+		
 	};
+}
+function editSiteEvent () {
+	var editBtns = $('.icon-pencil');
+	var overlay = $('.overlay');
+	var dialog = $('.dialog-edit');
+	var inputUrl = $('#edit-input-url');
+	var inputName = $('#edit-input-name');
+	editBtns.click(function () {
+		var a = $(this).parents('a');
+		var confirm = $('#edit-confirm-btn');
+		var key = a.attr('key');
+		overlay.addClass('show');
+		dialog.addClass('dialog-show');
+		inputUrl.val(a.attr('href'));
+		inputName.val(a.find('span.text').text());
+		confirm.click(function () {
+			editSiteObj (key,inputUrl.val(),inputName.val());
+			overlay.removeClass('show');
+			dialog.removeClass('dialog-show');
+		});
+	});
+}
+function closeBox () {
+	var close = $('.icon-cross');
+	close.click(function () {
+		var overlay = $('.overlay');
+		var dialog = $(this).parents('.dialog-edit');
+		overlay.removeClass('show');
+		dialog.removeClass('dialog-show');
+	});
 }
