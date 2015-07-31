@@ -16,7 +16,7 @@
 			<input type="button" value = "修改" id="btn-edit" >
 		</div>
 		<div id="content-site"></div>
-		<div class="dialog-edit">
+		<div class="dialog" id="dialog-edit">
 			<div class="dialog-content">
 				<span class="icon-cross"></span>
 				<h3>修改网址或描述</h3>
@@ -29,6 +29,21 @@
 					<input type="text" id="edit-input-name">
 				</div>
 				<input type="button" value="确认修改" id="edit-confirm-btn">
+			</div>
+		</div>
+		<div class="dialog" id="dialog-delete">
+			<div class="dialog-content">
+				<span class="icon-cross"></span>
+				<h3>删除收藏站点</h3>
+				<p>确定要删除<span id="siteName"></span>吗？</p>
+				<input type="button" value="删除" id="delete-confirm-btn">
+				<input type="button" value="取消" id="delete-cancel-btn">
+			</div>
+		</div>
+		<div class="tips">
+			<div class="tips-content">
+				<p id="state"></p>
+				<input type="button" value="确定" id="tips-confirm-btn">
 			</div>
 		</div>
 		<div class="overlay"></div>

@@ -79,32 +79,52 @@ function createHtml (obj) {//为添加的站点创建html元素节点并加入�
 	};
 }
 function editSiteObj (key,url,name) {
+	var state = document.getElementById('state');
 	if (localStorage.getItem("item"+key)) {
 		var obj = JSON.parse(localStorage.getItem("item"+key));
-		obj.url = url;
-		obj.name = name;
-		localStorage.setItem("item"+key,JSON.stringify(obj));
+		if (obj.url==url && obj.name==name) {	
+			state.innerHTML = "未做任何改动！";
+			return;
+		} 
+		else{
+			obj.url = url;
+			obj.name = name;
+			localStorage.setItem("item"+key,JSON.stringify(obj));
 
-		var domA = document.querySelector("a[key='"+key+"']");
-		var text = domA.querySelector("span.text");
-		domA.setAttribute("href",url);
-		text.innerHTML = name;
+			var domA = document.querySelector("a[key='"+key+"']");
+			var text = domA.querySelector("span.text");
+			domA.setAttribute("href",url);
+			text.innerHTML = name;
+			state.innerHTML = "修改成功！";
+		}
+		
 	}
 	else return;
 }
 function deleteSiteObj (key) {
+	var state = document.getElementById('state');
 	if (localStorage.getItem("item"+key)) {
 		var content = document.getElementById('content-site');
 		var domA = document.querySelector("a[key='"+key+"']");
 		content.removeChild(domA);
 
 		localStorage.removeItem("item"+key);
-		for (var i = key+1; i < countItem; i++) {
+		for (var i = parseInt(key)+1; i < countItem; i++) {
 			var obj = JSON.parse(localStorage.getItem("item"+i));
-			obj.key = i-1;
-			localStorage.setItem("item"+obj.key,JSON.stringify(obj));
+			if (obj) {
+				obj.key = i-1;
+				localStorage.setItem("item"+obj.key,JSON.stringify(obj));
+			}
+			var a = document.querySelector("a[key='"+i+"']");
+			if(a){
+				a.setAttribute('key', i-1);
+			}
+			
 		}
 		countItem--;
+		localStorage.setItem("countItem",countItem);
+		localStorage.removeItem("item"+countItem);
+		state.innerHTML = "删除成功！";
 	}
 	else return;
 }
@@ -112,8 +132,8 @@ function bindEvent () {//绑定按钮的事件
 	addSiteEvent();
 	editSiteStateEvent();
 	editSiteEvent();
+	deleteSiteEvent();
 	closeBox();
-
 }
 
 function addSiteEvent () {
@@ -176,30 +196,106 @@ function editSiteStateEvent () {
 function editSiteEvent () {
 	var editBtns = $('.icon-pencil');
 	var overlay = $('.overlay');
-	var dialog = $('.dialog-edit');
+	var dialog = $('#dialog-edit');
+	var tips = $('.tips');
+	var tipsBtn = $('#tips-confirm-btn');
 	var inputUrl = $('#edit-input-url');
 	var inputName = $('#edit-input-name');
+	var confirm = $('#edit-confirm-btn');
+	var key;
 	editBtns.click(function () {
 		var a = $(this).parents('a');
-		var confirm = $('#edit-confirm-btn');
-		var key = a.attr('key');
+		key = a.attr('key');
 		overlay.addClass('show');
 		dialog.addClass('dialog-show');
+		tips.addClass('tips-show');
 		inputUrl.val(a.attr('href'));
 		inputName.val(a.find('span.text').text());
-		confirm.click(function () {
-			editSiteObj (key,inputUrl.val(),inputName.val());
-			overlay.removeClass('show');
-			dialog.removeClass('dialog-show');
-		});
+	});
+	confirm.click(function () {
+		editSiteObj (key,inputUrl.val(),inputName.val());
+		dialog.addClass('dialog-rotate');
+		tips.addClass('tips-rotate');
+	});
+	tipsBtn.click(function () {
+		overlay.removeClass('show');
+		tips.removeClass('tips-show');
+		tips.removeClass('tips-rotate');
+		dialog.removeClass('dialog-show');
+		dialog.removeClass('dialog-rotate');
 	});
 }
 function closeBox () {
 	var close = $('.icon-cross');
-	close.click(function () {
+	var cancel = $('#delete-cancel-btn');
+	var closefun = function(){
 		var overlay = $('.overlay');
-		var dialog = $(this).parents('.dialog-edit');
+		var dialog = $(this).parents('.dialog');
 		overlay.removeClass('show');
 		dialog.removeClass('dialog-show');
+	};
+	close.click(closefun);
+	cancel.click(closefun);
+}
+function deleteSiteEvent () {
+	var dialog = $('#dialog-delete');
+	var overlay = $('.overlay');
+	var deleteBtns = $('.icon-bin');
+	var tips = $('.tips');
+	var tipsBtn = $('#tips-confirm-btn');
+	var confirm = $('#delete-confirm-btn');
+	var siteName = $('span#siteName');
+	var key;
+	deleteBtns.click(function () {
+		var a = $(this).parents('a');
+		key = a.attr('key');
+		overlay.addClass('show');
+		dialog.addClass('dialog-show');
+		tips.addClass('tips-show');
+		siteName.text("【"+a.find('span.text').text()+"】");
 	});
+	confirm.click(function () {
+		if (key) {
+			deleteSiteObj(key);
+			dialog.addClass('dialog-rotate');
+			tips.addClass('tips-rotate');
+		} 
+		else{
+
+		}
+	});
+	tipsBtn.click(function () {
+		overlay.removeClass('show');
+		tips.removeClass('tips-show');
+		tips.removeClass('tips-rotate');
+		dialog.removeClass('dialog-show');
+		dialog.removeClass('dialog-rotate');
+	});
+}
+function setmemory() {
+	countItem = parseInt(localStorage.getItem("countItem"));//从本地存储中获取站点数目
+	function reduceAfter(i) {
+		for (var j = i+1; j <countItem; j++) {
+			if (localStorage.getItem("item" + j)) {
+				var obj = JSON.parse(localStorage.getItem("item"+j));
+				obj.key = j-1;
+				localStorage.setItem("item"+obj.key,JSON.stringify(obj));
+			}
+			else continue;
+		}
+	}
+	function find (i) {
+		if (localStorage.getItem("item" + i)) {
+			return true;
+		} 
+		else{
+			return false;
+		}
+	}
+	
+	for (var i = 0; i < countItem ; i++) {
+		while(!find(i)) {
+			reduceAfter(i);
+		}
+	}
 }
